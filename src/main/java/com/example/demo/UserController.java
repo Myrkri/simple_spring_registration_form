@@ -35,11 +35,7 @@ public class UserController {
         List<User> userList;
         if (!name.equals("")) {
             userList = new ArrayList<>(crudUserRepository.findByNameLike(name));
-            if (userList.isEmpty()) {
-                return "There is no users with name like this!";
-            } else {
-                return userList;
-            }
+            return (userList.isEmpty() ? "There is no users with name like this!" : userList);
         } else {
             userList = new ArrayList<>();
             for (User user : crudUserRepository.findAll()) {
