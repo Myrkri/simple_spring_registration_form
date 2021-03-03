@@ -31,11 +31,17 @@ public class UserController {
 
     @GetMapping(value = "/results")
     @ResponseStatus(HttpStatus.CREATED)
-    public List<User> searchPage(@RequestParam("name") String name) {
+    public Object searchPage(@RequestParam("name") String name) {
+        List<User> userList;
         if (!name.equals("")) {
-            return crudUserRepository.findByNameLike(name);
+            userList = new ArrayList<>(crudUserRepository.findByNameLike(name));
+            if (userList.isEmpty()) {
+                return "There is no users with name like this!";
+            } else {
+                return userList;
+            }
         } else {
-            List<User> userList = new ArrayList<>();
+            userList = new ArrayList<>();
             for (User user : crudUserRepository.findAll()) {
                 userList.add(user);
             }
