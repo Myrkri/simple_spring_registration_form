@@ -1,14 +1,12 @@
 package com.example.demo;
 
 import lombok.Getter;
-import lombok.ToString;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "users")
 @Getter
-@ToString
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

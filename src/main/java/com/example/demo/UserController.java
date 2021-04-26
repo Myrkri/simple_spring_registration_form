@@ -1,7 +1,7 @@
 package com.example.demo;
 
+import com.example.demo.error_handling.UserNotFoundException;
 import com.example.demo.interfaces.CrudUserRepository;
-import dto.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -17,31 +17,25 @@ public class UserController {
 
     @PostMapping(value = "/users")
     @ResponseStatus(HttpStatus.CREATED)
-    public String createUser(@RequestBody UserDTO userDTO) {
-        if (!crudUserRepository.findByNameLike(userDTO.getName()).isEmpty()) {
-            return "This username already exists.";
-        } else {
-            User user = new User();
-            user.setName(userDTO.getName());
-            user.setPassword(userDTO.getPassword());
-            crudUserRepository.save(user);
-            return "Registration successful!";
-        }
+    public String createUser(@RequestBody User user) {
+        crudUserRepository.save(user);
+        return "Registration successful!";
     }
 
-    @GetMapping(value = "/results")
-    @ResponseStatus(HttpStatus.CREATED)
-    public Object searchPage(@RequestParam("name") String name) {
+    @GetMapping(value = "/users")
+    public List<User> searchPage(@RequestParam(value = "name", required = false) String name) {
         List<User> userList;
-        if (!name.equals("")) {
+        if (name != null && !name.equals("")) {
             userList = new ArrayList<>(crudUserRepository.findByNameLike(name));
-            return (userList.isEmpty() ? "There are no users with the name like this!" : userList);
+            if (userList.isEmpty()){
+                throw new UserNotFoundException();
+            }
         } else {
             userList = new ArrayList<>();
             for (User user : crudUserRepository.findAll()) {
                 userList.add(user);
             }
-            return userList;
         }
+        return userList;
     }
 }
